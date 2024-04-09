@@ -14,8 +14,37 @@ class Program
 {
     static void Main(string[] args)
     {
-        ServerUDP sUDP = new ServerUDP();
-        sUDP.start();
+        // ServerUDP sUDP = new ServerUDP();
+        // sUDP.start();
+        const int port = 5000; // Port to listen on
+                               //TCP socket
+        Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        //Bind the socket to the port
+        listener.Bind(new IPEndPoint(IPAddress.Any, port));
+        //listen for incoming connections
+        listener.Listen(10);
+
+        Console.WriteLine("Server started on port: " + port);
+
+        //Accept connection
+        Socket clientSocket = listener.Accept();
+
+        //Receive date from client
+        byte[] buffer = new byte[1024];
+        int bytesReceived = clientSocket.Receive(buffer);
+
+        //Convert received bytes to string
+        string message = Encoding.ASCII.GetString(buffer, 0, bytesReceived);
+        Console.WriteLine("Client says: " + message);
+
+        //Send a response msg back to client
+        string response = "Hello from the server";
+        byte[] responseBytes = Encoding.ASCII.GetBytes(response);
+        clientSocket.Send(responseBytes);
+
+        //Close the conn
+        clientSocket.Close();
+        listener.Close();
     }
 }
 
@@ -24,44 +53,18 @@ class ServerUDP
 
     //TODO: implement all necessary logic to create sockets and handle incoming messages
     // Do not put all the logic into one method. Create multiple methods to handle different tasks.
-    private Socket _socket;
 
     public void start()
     {
-        _socket = CreateSocket();
-        BindSocket(_socket);
-        ReceiveHelloMessage();
+
     }
 
     //TODO: create all needed objects for your sockets 
-    private Socket CreateSocket()
-    {
-        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        return socket;
-    }
+
     //TODO: keep receiving messages from clients
     // you can call a dedicated method to handle each received type of messages
-    private void BindSocket(Socket socket)
-    {
-        int portNumber = 1234; // Replace 1234 with the actual port number you want to use
-        socket.Bind(new IPEndPoint(IPAddress.Any, portNumber));
-    }
-    //TODO: [Receive Hello]
-    private void ReceiveHelloMessage()
-    {
-        byte[] buffer = new byte[1024];
-        int bytesReceived = _socket.Receive(buffer);
-        string message = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
 
-        if (message.Trim() == "Hello")
-        {
-            Console.WriteLine("Client says: Hello");
-        }
-        else
-        {
-            Console.WriteLine("Unexpected message: " + message);
-        }
-    }
+    //TODO: [Receive Hello]
     // Which should print hello!
     //TODO: [Send Welcome]
 
