@@ -20,9 +20,22 @@ class Program
         //Conn to server
 
         //send msg to server
-        string message = "Hello from the client";
+        string message = "Hello";
         byte[] messageBytes = Encoding.ASCII.GetBytes(message);
         Socket clientSocket = null; // Declare the clientSocket variable outside of the if statement
+
+        NetworkStream stream = client.GetStream();
+        Data requestdata  = new Data
+        {
+            Type = MessageType.RequestData,
+            Content = ""
+        };
+        
+        string jsonRequest = JsonConvert.SerializeObject(requestData);
+
+        byte[] requestDataBytes = Encoding.UTF8.GetBytes(jsonRequest);
+        stream.Write(requestDataBytes, 0, requestDataBytes.Length);
+        Console.WriteLine("Sent request to server.");
 
         IPAddress ipAddress;
         if (IPAddress.TryParse(serverAddress, out ipAddress))
@@ -51,36 +64,4 @@ class Program
         //close conn
         clientSocket.Close();
     }
-}
-
-class ClientUDP
-{
-
-    //TODO: implement all necessary logic to create sockets and handle incoming messages
-    // Do not put all the logic into one method. Create multiple methods to handle different tasks.
-    public void start()
-    {
-
-    }
-
-    // TODO: Implement the logic to get the server end point.
-    // Replace the following line with your implementation.
-
-    //TODO: create all needed objects for your sockets 
-
-    //TODO: [Send Hello message]
-
-    //TODO: [Receive Welcome]
-
-    //TODO: [Send RequestData]
-
-    //TODO: [Receive Data]
-
-    //TODO: [Send RequestData]
-
-    //TODO: [Send End]
-
-    //TODO: [Handle Errors]
-
-
 }

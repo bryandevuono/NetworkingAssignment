@@ -38,7 +38,7 @@ class Program
         Console.WriteLine("Client says: " + message);
 
         //Send a response msg back to client
-        string response = "Hello from the server";
+        string response = "Welcome";
         byte[] responseBytes = Encoding.ASCII.GetBytes(response);
         clientSocket.Send(responseBytes);
 
