@@ -14,37 +14,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        // ServerUDP sUDP = new ServerUDP();
-        // sUDP.start();
-        const int port = 5000; // Port to listen on
-                               //TCP socket
-        Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        //Bind the socket to the port
-        listener.Bind(new IPEndPoint(IPAddress.Any, port));
-        //listen for incoming connections
-        listener.Listen(10);
-
-        Console.WriteLine("Server started on port: " + port);
-
-        //Accept connection
-        Socket clientSocket = listener.Accept();
-
-        //Receive date from client
-        byte[] buffer = new byte[1024];
-        int bytesReceived = clientSocket.Receive(buffer);
-
-        //Convert received bytes to string
-        string message = Encoding.ASCII.GetString(buffer, 0, bytesReceived);
-        Console.WriteLine("Client says: " + message);
-
-        //Send a response msg back to client
-        string response = "Welcome";
-        byte[] responseBytes = Encoding.ASCII.GetBytes(response);
-        clientSocket.Send(responseBytes);
-
-        //Close the conn
-        clientSocket.Close();
-        listener.Close();
+        ServerUDP sudp = new ServerUDP();
+        sudp.Start();
     }
 }
 
@@ -53,19 +24,84 @@ class ServerUDP
 
     //TODO: implement all necessary logic to create sockets and handle incoming messages
     // Do not put all the logic into one method. Create multiple methods to handle different tasks.
-
-    public void start()
+    public void Start()
     {
-
+        ServerUDP udpServer = new ServerUDP();
+        receiveMessage();
     }
-
     //TODO: create all needed objects for your sockets 
-
+    public ServerUDP()
+    {
+        udpServer = new UdpClient();
+    }
+    private UdpClient udpServer;
+    private const int serverPort = 32000;
     //TODO: keep receiving messages from clients
     // you can call a dedicated method to handle each received type of messages
-
     //TODO: [Receive Hello]
     // Which should print hello!
+    public void receiveMessage()
+    {
+        Console.WriteLine("UDP server is running. Waiting for messages...");
+
+        try
+        {
+            udpServer.Client.Bind(new IPEndPoint(IPAddress.Any, serverPort));
+            while (true)
+            {
+                IPEndPoint clientEndpoint = new IPEndPoint(IPAddress.Any, 0);
+                byte[] receivedData = udpServer.Receive(ref clientEndpoint);
+
+                Message receivedMessage = DecodeMessage(receivedData);
+
+                Console.WriteLine($"Received from {clientEndpoint}: {receivedMessage.Content}");
+
+                if (receivedMessage.Type == MessageType.Hello)
+                {
+                    responseMessage.Type = MessageType.Welcome;
+                    responseMessage.Content = "Welcome from server";
+                }
+                byte[] responseData = EncodeMessage(responseMessage);
+
+                udpServer.Send(responseData, responseData.Length, clientEndpoint);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+        }
+        finally
+        {
+            if (udpServer != null)
+            {
+                udpServer.Close();
+            }
+        }
+    }
+
+
+    static Message DecodeMessage(byte[] data)
+    {
+        string messageString = Encoding.UTF8.GetString(data);
+        string[] parts = messageString.Split('|');
+
+        if (parts.Length != 2 || !Enum.TryParse(parts[0], out MessageType messageType))
+        {
+            throw new ArgumentException("Invalid message format");
+        }
+        Message decodedMessage = new Message();
+        decodedMessage.Type = messageType;
+        decodedMessage.Content = parts[1];
+        return decodedMessage;
+    }
+
+    static byte[] EncodeMessage(Message message)
+    {
+        string messageString = $"{message.Type}|{message.Content}";
+        return Encoding.UTF8.GetBytes(messageString);
+    }
+}
+
     //TODO: [Send Welcome]
 
     //TODO: [Receive RequestData]
@@ -81,4 +117,3 @@ class ServerUDP
     //TODO: create all needed methods to handle incoming messages
 
 
-}

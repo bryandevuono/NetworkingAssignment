@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "q6DLg8YKSJ6wN6ltNFzTN7lDAwQZQ/WUUzuutxho6lyZXQT3Pj5yjODgH6pJ6qptaxlbEcOdcirL7+5RMyxcPA==",
+  "dgSpecHash": "sVZShWnkmv2T2K/0YY42C1fmF5m1+GGV6jdyrEsmOMYAyJtni/PFXZdrHvHsffz+thu0tr9as+kHdm+zYY9oNg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\server\\server.csproj",
+  "projectFilePath": "C:\\Users\\bryan\\Documents\\NetworkingAssignment-2\\server\\server.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\julin\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.25\\microsoft.netcore.app.ref.6.0.25.nupkg.sha512",
-    "C:\\Users\\julin\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.25\\microsoft.windowsdesktop.app.ref.6.0.25.nupkg.sha512",
-    "C:\\Users\\julin\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.25\\microsoft.aspnetcore.app.ref.6.0.25.nupkg.sha512",
-    "C:\\Users\\julin\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.25\\microsoft.netcore.app.host.win-x64.6.0.25.nupkg.sha512"
+    "C:\\Users\\bryan\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.21\\microsoft.netcore.app.ref.6.0.21.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.21\\microsoft.windowsdesktop.app.ref.6.0.21.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.21\\microsoft.aspnetcore.app.ref.6.0.21.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.21\\microsoft.netcore.app.host.win-x64.6.0.21.nupkg.sha512"
   ],
   "logs": []
 }
