@@ -52,7 +52,7 @@ class ServerUDP
                 IPEndPoint clientEndpoint = new IPEndPoint(IPAddress.Any, 0);
                 byte[] receivedData = udpServer.Receive(ref clientEndpoint);
 
-                Message receivedMessage = DecodeMessage(receivedData);
+                Message receivedMessage = Deserialize(receivedData);
 
                 Console.WriteLine($"Received from {clientEndpoint}: {receivedMessage.Content}");
                 Message responseMessage = new Message();
@@ -61,7 +61,7 @@ class ServerUDP
                     responseMessage.Type = MessageType.Welcome;
                     responseMessage.Content = "Welcome from server";
                 }
-                byte[] responseData = EncodeMessage(responseMessage);
+                byte[] responseData = Serialize(responseMessage);
 
                 udpServer.Send(responseData, responseData.Length, clientEndpoint);
             }
@@ -80,7 +80,7 @@ class ServerUDP
     }
 
 
-    static Message DecodeMessage(byte[] data)
+    static Message Deserialize(byte[] data)
     {
         string messageString = Encoding.UTF8.GetString(data);
         string[] parts = messageString.Split('|');
@@ -95,7 +95,7 @@ class ServerUDP
         return decodedMessage;
     }
 
-    static byte[] EncodeMessage(Message message)
+    static byte[] Serialize(Message message)
     {
         string messageString = $"{message.Type}|{message.Content}";
         return Encoding.UTF8.GetBytes(messageString);

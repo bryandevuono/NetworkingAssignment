@@ -39,17 +39,22 @@ class ClientUDP
             Message helloMessage = new Message();
             helloMessage.Type = MessageType.Hello;
             helloMessage.Content = "Hello from the client";
-            byte[] data = EncodeMessage(helloMessage);
-
+            byte[] data = Serialize(helloMessage);
+    
+            
             udpClient.Send(data, data.Length, serverEndpoint);
 
             IPEndPoint receiveEndpoint = new IPEndPoint(IPAddress.Any, 0);
             byte[] receivedData = udpClient.Receive(ref receiveEndpoint);
-            Message receivedMessage = DecodeMessage(receivedData);
+            Message receivedMessage = Deserialize(receivedData);
 
             if (receivedMessage.Type == MessageType.Welcome)
             {
                 Console.WriteLine($"Received from server ({receiveEndpoint}): {receivedMessage.Content}");
+            }
+            if(receivedMessage.Type == MessageType.RequestData)
+            {
+
             }
             else
             {
@@ -69,13 +74,13 @@ class ClientUDP
         }
     }
 
-    static byte[] EncodeMessage(Message message)
+    static byte[] Serialize(Message message)
     {
         string messageString = $"{message.Type}|{message.Content}";
         return Encoding.UTF8.GetBytes(messageString);
     }
 
-    static Message DecodeMessage(byte[] data)
+    static Message Deserialize(byte[] data)
     {
         try
         {
