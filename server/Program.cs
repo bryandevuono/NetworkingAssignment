@@ -55,7 +55,7 @@ class ServerUDP
                 Message receivedMessage = DecodeMessage(receivedData);
 
                 Console.WriteLine($"Received from {clientEndpoint}: {receivedMessage.Content}");
-
+                Message responseMessage = new Message();
                 if (receivedMessage.Type == MessageType.Hello)
                 {
                     responseMessage.Type = MessageType.Welcome;
