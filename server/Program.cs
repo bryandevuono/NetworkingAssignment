@@ -61,6 +61,11 @@ class ServerUDP
                     responseMessage.Type = MessageType.Welcome;
                     responseMessage.Content = "Welcome from server";
                 }
+                if (receivedMessage.Type == MessageType.RequestData)
+                {
+                    responseMessage.Type = MessageType.Welcome;
+                    responseMessage.Content = "File from server"; //tijdelijk
+                }
                 byte[] responseData = Serialize(responseMessage);
 
                 udpServer.Send(responseData, responseData.Length, clientEndpoint);

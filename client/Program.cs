@@ -22,24 +22,27 @@ class ClientUDP
     // Do not put all the logic into one method. Create multiple methods to handle different tasks.
     public void Start()
     {
-        SendMessage();
+        Message helloMessage = new Message();
+        helloMessage.Type = MessageType.Hello;
+        helloMessage.Content = "Hello from the client";
+        SendMessage(helloMessage);
+        Message Request = new Message();
+        Request.Type = MessageType.RequestData;
+        Request.Content = "hamlet.txt";
+        SendMessage(Request);
     }
     //TODO: create all needed objects for your sockets 
 
 
     //TODO: [Send Hello message]
-    private void SendMessage()
+    private void SendMessage(Message message)
     {
         udpClient = new UdpClient();
 
         try
         {
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(ServerAddress), ServerPort);
-
-            Message helloMessage = new Message();
-            helloMessage.Type = MessageType.Hello;
-            helloMessage.Content = "Hello from the client";
-            byte[] data = Serialize(helloMessage);
+            byte[] data = Serialize(message);
     
             
             udpClient.Send(data, data.Length, serverEndpoint);
@@ -52,13 +55,9 @@ class ClientUDP
             {
                 Console.WriteLine($"Received from server ({receiveEndpoint}): {receivedMessage.Content}");
             }
-            if(receivedMessage.Type == MessageType.RequestData)
+            if(receivedMessage.Type == MessageType.Data)
             {
-
-            }
-            else
-            {
-                Console.WriteLine($"Received unexpected response from server ({receiveEndpoint}): {receivedMessage.Content}");
+                Console.WriteLine($"Received from server ({receiveEndpoint}): {receivedMessage.Content}");
             }
         }
         catch (Exception e)
