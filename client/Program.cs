@@ -49,7 +49,7 @@ class ClientUDP
 
             if (receivedMessage.Type == MessageType.Welcome)
             {
-                Console.WriteLine($"Received from server ({receiveEndpoint}): Welcome");
+                Console.WriteLine($"Received from server ({receiveEndpoint}): {receivedMessage.Content}");
             }
             else
             {
