@@ -57,7 +57,12 @@ class ClientUDP
             }
             if(receivedMessage.Type == MessageType.Data)
             {
-                Console.WriteLine($"Received from server ({receiveEndpoint}): {receivedMessage.Content}");
+                string base64String = receivedMessage.Content;
+                base64String = base64String.PadRight(base64String.Length + (4 - base64String.Length % 4) % 4, '=');
+                byte[] fileData = Convert.FromBase64String(base64String);
+                string fileContent = Encoding.UTF8.GetString(fileData);
+                Console.WriteLine("File received successfully. Content:");
+                Console.WriteLine(fileContent);
             }
         }
         catch (Exception e)
@@ -72,7 +77,7 @@ class ClientUDP
             }
         }
     }
-
+    
     static byte[] Serialize(Message message)
     {
         string messageString = $"{message.Type}|{message.Content}";
