@@ -39,7 +39,7 @@ class ServerUDP
     private const int serverPort = 32000;
     int PacketSize = 1024;
     private const int InitialCongestionWindowSize = 1;
-    private const int Threshold = 92;
+    private const int Threshold = 16;
     bool thresholdreached = false;
     //TODO: keep receiving messages from clients
     // you can call a dedicated method to handle each received type of messages
