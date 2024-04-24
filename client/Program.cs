@@ -18,52 +18,22 @@ class ClientUDP
     private const string ServerAddress = "127.0.0.1"; // Server IP address
     private const int ServerPort = 32000;
     private UdpClient udpClient;
-    //TODO: implement all necessary logic to create sockets and handle incoming messages
-    // Do not put all the logic into one method. Create multiple methods to handle different tasks.
+
     public void Start()
     {
-        Message helloMessage = new Message();
-        helloMessage.Type = MessageType.Hello;
-        helloMessage.Content = "Hello from the client";
-        SendMessage(helloMessage);
-        Message Request = new Message();
-        Request.Type = MessageType.RequestData;
-        Request.Content = "hamlet.txt";
-        SendMessage(Request);
-    }
-    //TODO: create all needed objects for your sockets 
-
-
-    //TODO: [Send Hello message]
-    private void SendMessage(Message message)
-    {
-        udpClient = new UdpClient();
-
         try
         {
+            udpClient = new UdpClient();
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(ServerAddress), ServerPort);
-            byte[] data = Serialize(message);
-    
-            
-            udpClient.Send(data, data.Length, serverEndpoint);
 
-            IPEndPoint receiveEndpoint = new IPEndPoint(IPAddress.Any, 0);
-            byte[] receivedData = udpClient.Receive(ref receiveEndpoint);
-            Message receivedMessage = Deserialize(receivedData);
+            // Send Hello message
+            SendMessage(MessageType.Hello, "Hello from the client");
 
-            if (receivedMessage.Type == MessageType.Welcome)
-            {
-                Console.WriteLine($"Received from server ({receiveEndpoint}): {receivedMessage.Content}");
-            }
-            if(receivedMessage.Type == MessageType.Data)
-            {
-                string base64String = receivedMessage.Content;
-                base64String = base64String.PadRight(base64String.Length + (4 - base64String.Length % 4) % 4, '=');
-                byte[] fileData = Convert.FromBase64String(base64String);
-                string fileContent = Encoding.UTF8.GetString(fileData);
-                Console.WriteLine("File received successfully. Content:");
-                Console.WriteLine(fileContent);
-            }
+            // Send RequestData message
+            SendMessage(MessageType.RequestData, "hamlet.txt");
+
+            // Receive messages from server
+            ReceiveMessages();
         }
         catch (Exception e)
         {
@@ -77,14 +47,57 @@ class ClientUDP
             }
         }
     }
-    
-    static byte[] Serialize(Message message)
+
+    private void SendMessage(MessageType messageType, string content)
+    {
+        Message message = new Message { Type = messageType, Content = content };
+        byte[] data = Serialize(message);
+        udpClient.Send(data, data.Length, ServerAddress, ServerPort);
+    }
+
+    private void ReceiveMessages()
+    {
+        try
+        {
+            while (true)
+            {
+                IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Any, 0);
+                byte[] receivedData = udpClient.Receive(ref serverEndpoint);
+                Message receivedMessage = Deserialize(receivedData);
+
+                if (receivedMessage.Type == MessageType.Welcome)
+                {
+                    Console.WriteLine($"Received from server ({serverEndpoint}): {receivedMessage.Content}");
+                }
+                else if (receivedMessage.Type == MessageType.Data)
+                {
+                    string base64String = receivedMessage.Content;
+                    base64String = base64String.PadRight(base64String.Length + (4 - base64String.Length % 4) % 4, '=');
+                    byte[] fileData = Convert.FromBase64String(base64String);
+                    string fileContent = Encoding.UTF8.GetString(fileData);
+                    Console.WriteLine("File received successfully. Content:");
+                    Console.WriteLine(fileContent);
+                }
+                else if (receivedMessage.Type == MessageType.End)
+                {
+                    Console.WriteLine("End of file transmission.");
+                    break;
+                }
+            }
+        }
+        catch (SocketException ex)
+        {
+            Console.WriteLine($"SocketException occurred: {ex.Message}");
+        }
+    }
+
+    private static byte[] Serialize(Message message)
     {
         string messageString = $"{message.Type}|{message.Content}";
         return Encoding.UTF8.GetBytes(messageString);
     }
 
-    static Message Deserialize(byte[] data)
+    private static Message Deserialize(byte[] data)
     {
         try
         {
@@ -96,27 +109,11 @@ class ClientUDP
                 throw new ArgumentException("Invalid message format");
             }
 
-            Message decodedMessage = new Message();
-            decodedMessage.Type = messageType;
-            decodedMessage.Content = parts[1];
-
-            return decodedMessage;
-        }   
+            return new Message { Type = messageType, Content = parts[1] };
+        }
         catch (Exception ex)
         {
             throw new ArgumentException("Error decoding message", ex);
         }
     }
 }
-    //TODO: [Receive Welcome]
-
-    //TODO: [Send RequestData]
-
-    //TODO: [Receive Data]
-
-    //TODO: [Send RequestData]
-
-    //TODO: [Send End]
-
-    //TODO: [Handle Errors]
-
