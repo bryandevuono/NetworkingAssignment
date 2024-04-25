@@ -28,8 +28,6 @@ class ClientUDP
 
             SendMessage(MessageType.Hello, "Hello from the client");
 
-            SendMessage(MessageType.RequestData, "hamlet.txt");
-
             ReceiveMessages();
         }
         catch (Exception e)
@@ -65,6 +63,7 @@ class ClientUDP
                 if (receivedMessage.Type == MessageType.Welcome)
                 {
                     Console.WriteLine($"Received from server ({serverEndpoint}): {receivedMessage.Content}");
+                    SendMessage(MessageType.RequestData, "hamlet.txt");
                 }
                 else if (receivedMessage.Type == MessageType.Data)
                 {
