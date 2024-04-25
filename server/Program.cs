@@ -62,25 +62,20 @@ class ServerUDP
     {
         Message responseMessage = new Message();
 
-        switch (receivedMessage.Type)
+        if(receivedMessage.Type == MessageType.Hello)
         {
-            case MessageType.Hello:
-                responseMessage.Type = MessageType.Welcome;
-                responseMessage.Content = "Welcome from server";
-                break;
-            case MessageType.RequestData:
-                responseMessage.Type = MessageType.Data;
-                SendFileDataPackets("hamlet.txt", clientEndpoint);
-                if (thresholdReached)
-                {
-                    SendEndMessage(clientEndpoint);
-                }
-                break;
-            default:
-                // Handle unsupported message type
-                break;
+            responseMessage.Type = MessageType.Welcome;
+            responseMessage.Content = "Welcome from server";
         }
-
+        if(receivedMessage.Type == MessageType.RequestData)
+        {
+            responseMessage.Type = MessageType.Data;
+            SendFileDataPackets("hamlet.txt", clientEndpoint);
+            if (thresholdReached)
+            {
+                SendEndMessage(clientEndpoint);
+            }
+        }
         byte[] responseData = Serialize(responseMessage);
         udpServer.Send(responseData, responseData.Length, clientEndpoint);
     }
@@ -105,8 +100,6 @@ class ServerUDP
             udpServer.Send(serializedMessage, serializedMessage.Length, clientEndpoint);
 
             Console.WriteLine($"Sent packet {sequenceNumber + 1}/{totalPackets}");
-
-            // Simulate threshold reached (for demonstration purposes)
             if (sequenceNumber == 15)
             {
                 thresholdReached = true;

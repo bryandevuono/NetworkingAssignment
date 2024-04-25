@@ -26,13 +26,10 @@ class ClientUDP
             udpClient = new UdpClient();
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(ServerAddress), ServerPort);
 
-            // Send Hello message
             SendMessage(MessageType.Hello, "Hello from the client");
 
-            // Send RequestData message
             SendMessage(MessageType.RequestData, "hamlet.txt");
 
-            // Receive messages from server
             ReceiveMessages();
         }
         catch (Exception e)
