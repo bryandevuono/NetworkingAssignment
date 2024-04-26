@@ -15,7 +15,7 @@ class Program
 }
 class ClientUDP
 {
-    private const string ServerAddress = "127.0.0.1"; // Server IP address
+    private const string ServerAddress = "127.0.0.1"; 
     private const int ServerPort = 32000;
     private UdpClient udpClient;
 
@@ -73,6 +73,7 @@ class ClientUDP
                     string fileContent = Encoding.UTF8.GetString(fileData);
                     Console.WriteLine("File received successfully. Content:");
                     Console.WriteLine(fileContent);
+                    SendMessage(MessageType.Ack, "received");
                 }
                 else if (receivedMessage.Type == MessageType.End)
                 {

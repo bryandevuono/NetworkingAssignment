@@ -26,6 +26,9 @@ class ServerUDP
     private const int ServerPort = 32000;
     private const int PacketSize = 1024;
     private bool thresholdReached = false;
+    public int InitialWindowSize = 1;
+    public int Threshold = 15;
+    bool acked = false;
 
     public ServerUDP()
     {
@@ -76,36 +79,59 @@ class ServerUDP
                 SendEndMessage(clientEndpoint);
             }
         }
+        if(receivedMessage.Type == MessageType.Ack)
+        {
+            acked = true;
+        }
         byte[] responseData = Serialize(responseMessage);
         udpServer.Send(responseData, responseData.Length, clientEndpoint);
     }
 
-    private void SendFileDataPackets(string filePath, IPEndPoint clientEndpoint)
+    public void SendFileDataPackets(string filePath, IPEndPoint clientEndpoint)
     {
+        int currentWindowSize = InitialWindowSize;
         byte[] fileData = File.ReadAllBytes(filePath);
         int totalPackets = (int)Math.Ceiling((double)fileData.Length / PacketSize);
-
-        for (int sequenceNumber = 0; sequenceNumber < totalPackets; sequenceNumber++)
+        int packetsSent = 0;
+        
+        while (packetsSent < totalPackets)
         {
-            int offset = sequenceNumber * PacketSize;
-            int remainingBytes = Math.Min(PacketSize, fileData.Length - offset);
-            byte[] packetData = new byte[remainingBytes];
-            Array.Copy(fileData, offset, packetData, 0, remainingBytes);
-
-            Message fileMessage = new Message();
-            fileMessage.Type = MessageType.Data;
-            fileMessage.Content = Convert.ToBase64String(packetData);
-
-            byte[] serializedMessage = Serialize(fileMessage);
-            udpServer.Send(serializedMessage, serializedMessage.Length, clientEndpoint);
-
-            Console.WriteLine($"Sent packet {sequenceNumber + 1}/{totalPackets}");
-            if (sequenceNumber == 15)
+            for (int sequenceNumber = packetsSent; sequenceNumber < Math.Min(packetsSent + currentWindowSize, totalPackets); sequenceNumber++)
             {
-                thresholdReached = true;
+                int offset = sequenceNumber * PacketSize;
+                int remainingBytes = Math.Min(PacketSize, fileData.Length - offset);
+                byte[] packetData = new byte[remainingBytes];
+                Array.Copy(fileData, offset, packetData, 0, remainingBytes);
+
+                Message fileMessage = new Message();
+                fileMessage.Type = MessageType.Data;
+                fileMessage.Content = Convert.ToBase64String(packetData);
+
+                byte[] serializedMessage = Serialize(fileMessage);
+                udpServer.Send(serializedMessage, serializedMessage.Length, clientEndpoint);
+
+                Console.WriteLine($"Sent packet {sequenceNumber + 1}/{totalPackets}");
+            }
+            // ack
+            packetsSent += currentWindowSize;
+            byte[] receiveddata = udpServer.Receive(ref clientEndpoint);
+            Message receivedmessage = Deserialize(receiveddata);
+            HandleReceivedMessage(receivedmessage, clientEndpoint);
+
+            if (currentWindowSize < Threshold && acked)
+            {
+                currentWindowSize = currentWindowSize*2; 
+            }
+            else
+            {
+                currentWindowSize = Threshold; 
+                Thread.Sleep(500);
             }
         }
+
+        thresholdReached = true;
     }
+
 
     private void SendEndMessage(IPEndPoint clientEndpoint)
     {
