@@ -28,7 +28,7 @@ class ServerUDP
     private bool thresholdReached = false;
     public int InitialWindowSize = 1;
     public int Threshold = 15;
-    bool acked = false;
+    public int acked = 0;
 
     public ServerUDP()
     {
@@ -81,7 +81,7 @@ class ServerUDP
         }
         if(receivedMessage.Type == MessageType.Ack)
         {
-            acked = true;
+            acked++;
         }
         byte[] responseData = Serialize(responseMessage);
         udpServer.Send(responseData, responseData.Length, clientEndpoint);
@@ -111,21 +111,21 @@ class ServerUDP
                 udpServer.Send(serializedMessage, serializedMessage.Length, clientEndpoint);
 
                 Console.WriteLine($"Sent packet {sequenceNumber + 1}/{totalPackets}");
+                byte[] receiveddata = udpServer.Receive(ref clientEndpoint);
+                Message receivedmessage = Deserialize(receiveddata);
+                HandleReceivedMessage(receivedmessage, clientEndpoint);
             }
             // ack
             packetsSent += currentWindowSize;
-            byte[] receiveddata = udpServer.Receive(ref clientEndpoint);
-            Message receivedmessage = Deserialize(receiveddata);
-            HandleReceivedMessage(receivedmessage, clientEndpoint);
 
-            if (currentWindowSize < Threshold && acked)
+            if (currentWindowSize < Threshold && acked == currentWindowSize)
             {
                 currentWindowSize = currentWindowSize*2; 
             }
             else
             {
                 currentWindowSize = Threshold; 
-                Thread.Sleep(500);
+                Thread.Sleep(50);
             }
         }
 
