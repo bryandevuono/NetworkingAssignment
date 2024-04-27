@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\client\\client.csproj": {}
+    "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\Client\\client.csproj": {}
   },
   "projects": {
-    "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\client\\client.csproj": {
+    "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\Client\\client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\client\\client.csproj",
+        "projectUniqueName": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\Client\\client.csproj",
         "projectName": "client",
-        "projectPath": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\client\\client.csproj",
+        "projectPath": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\Client\\client.csproj",
         "packagesPath": "C:\\Users\\julin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\client\\obj\\",
+        "outputPath": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\Client\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\julin\\AppData\\Roaming\\NuGet\\NuGet.Config"
