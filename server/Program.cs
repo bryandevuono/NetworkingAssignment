@@ -109,13 +109,12 @@ class ServerUDP
 
                 byte[] serializedMessage = Serialize(fileMessage);
                 udpServer.Send(serializedMessage, serializedMessage.Length, clientEndpoint);
-
+                // ack
                 Console.WriteLine($"Sent packet {sequenceNumber + 1}/{totalPackets}");
                 byte[] receiveddata = udpServer.Receive(ref clientEndpoint);
                 Message receivedmessage = Deserialize(receiveddata);
                 HandleReceivedMessage(receivedmessage, clientEndpoint);
             }
-            // ack
             packetsSent += currentWindowSize;
 
             if (currentWindowSize < Threshold && acked == currentWindowSize)
