@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UGV97IqpV1iI8A4XBmAOIm8xi896tXGf01Gk6bZiMLG4JFOLKpb0TfzNizXrVRGgu9JoSZUAItUNguJ6C30rIQ==",
+  "dgSpecHash": "2lfcTBPcGYpnSdj83IZlOA8FgNoacDjysrnVQmqG4Xp5K1VssqhIMKx04TtExhvlcrhWor7bx1stzet7Rw4eXg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\Client\\client.csproj",
+  "projectFilePath": "C:\\Users\\julin\\OneDrive\\Bureaublad\\Networkingassignment\\NetworkingAssignment\\client\\client.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\julin\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.25\\microsoft.netcore.app.ref.6.0.25.nupkg.sha512",
     "C:\\Users\\julin\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.25\\microsoft.windowsdesktop.app.ref.6.0.25.nupkg.sha512",
