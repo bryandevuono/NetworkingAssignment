@@ -1,0 +1,31 @@
+ID:0001 - ACT I
+
+ID:0001 - SCENE I. Elsinore. A platform before the castle.
+ID:0002 - FRANCISCO at his post. Enter to him BERNARDO
+
+ID:0001 - BERNARDO
+ID:0002 - Who's there?
+ID:0003 - FRANCISCO
+ID:0004 - Nay, answer me: stand, and unfold yourself.
+
+ID:0001 - BERNARDO
+ID:0002 - Long live the king!
+ID:0003 - FRANCISCO
+ID:0004 - Bernardo?
+ID:0005 - BERNARDO
+ID:0006 - He.
+ID:0007 - FRANCISCO
+ID:0008 - You come most carefully upon your hour.
+ID:0009 - BERNARDO
+ID:0010 - 'Tis now struck twelve; get thee to bed, Francisco.
+ID:0011 - FRANCISCO
+ID:0012 - For this relief much thanks: 'tis bitter cold,
+ID:0013 - And I am sick at heart.
+ID:0014 - BERNARDO
+ID:0015 - Have you had quiet guard?
+ID:0016 - FRANCISCO
+ID:0017 - Not a mouse stirring.
+ID:0018 - BERNARDO
+ID:0019 - Well, good night.
+ID:0020 - If you do meet Horatio and Marcellus,
+

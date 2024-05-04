@@ -27,8 +27,9 @@ class ServerUDP
     private const int PacketSize = 3024;
     private bool thresholdReached = false;
     public int InitialWindowSize = 1;
-    public int Threshold = 15;
+    public int Threshold = 0;
     public int acked = 0;
+    private HashSet<string> requestDataMessages = new HashSet<string>();
 
     public ServerUDP()
     {
@@ -46,7 +47,6 @@ class ServerUDP
                 IPEndPoint clientEndpoint = new IPEndPoint(IPAddress.Any, 0);
                 byte[] receivedData = udpServer.Receive(ref clientEndpoint);
                 Message receivedMessage = Deserialize(receivedData);
-                Console.WriteLine($"Received from {clientEndpoint}: {receivedMessage.Type} {receivedMessage.Content}");
 
                 HandleReceivedMessage(receivedMessage, clientEndpoint);
             }
@@ -54,6 +54,9 @@ class ServerUDP
         catch (SocketException ex)
         {
             Console.WriteLine($"SocketException occurred: {ex.Message}");
+            Console.WriteLine("Restarting server...");
+            Start();
+            Console.WriteLine("UDP server restarted. Waiting for messages...");
         }
         finally
         {
@@ -67,24 +70,66 @@ class ServerUDP
 
         if (receivedMessage.Type == MessageType.Hello)
         {
+
+            string[] parts = receivedMessage.Content.Split(' ');
+            if (parts.Length > 1)
+            {
+
+                if (int.TryParse(parts[parts.Length - 1], out int clientThreshold))
+                {
+                    Threshold = clientThreshold;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid threshold value in Hello message.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Threshold not found in Hello message.");
+            }
+
             responseMessage.Type = MessageType.Welcome;
             responseMessage.Content = "Welcome from server";
+            Console.WriteLine($"Received from Client - Type: {receivedMessage.Type}\n");
         }
-        if (receivedMessage.Type == MessageType.RequestData)
+
+        else if (receivedMessage.Type == MessageType.RequestData)
         {
-            responseMessage.Type = MessageType.Data;
-            // responseMessage.Content = "Requesting data from server";
-            SendFileDataPackets("hamlet.txt", clientEndpoint);
-            if (thresholdReached)
+            if (IsValidRequestDataMessage(receivedMessage.Content))
             {
-                SendEndMessage(clientEndpoint);
+                if (!requestDataMessages.Contains(receivedMessage.Content))
+                {
+                    requestDataMessages.Add(receivedMessage.Content);
+                    responseMessage.Type = MessageType.Data;
+
+                    SendFileDataPackets("hamlet.txt", clientEndpoint);
+                    if (thresholdReached)
+                    {
+                        SendEndMessage(clientEndpoint);
+                    }
+                }
+
+
+                else
+                {
+                    Console.WriteLine($"Duplicate RequestData message received.");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Invalid format for RequestData message.");
             }
         }
-        if (receivedMessage.Type == MessageType.Ack)
+        else if (receivedMessage.Type == MessageType.Ack)
         {
             acked++;
             Console.WriteLine($"Wating for ack from client..");
             Console.WriteLine($"Received {receivedMessage.Type} from client - {receivedMessage.Content}");
+        }
+        else
+        {
+            Console.WriteLine($"Received from Client - Type: {receivedMessage.Type} - Content: {receivedMessage.Content}\n");
         }
         byte[] responseData = Serialize(responseMessage);
         udpServer.Send(responseData, responseData.Length, clientEndpoint);
@@ -97,14 +142,15 @@ class ServerUDP
         int totalLines = fileData.Length;
         int linesSent = 0;
 
-        while (linesSent < totalLines)
+        while (linesSent <= Threshold)
         {
             int linesToSend = Math.Min(currentWindowSize, totalLines - linesSent);
-
+            int ID = 1;
             StringBuilder sb = new StringBuilder();
             for (int i = linesSent; i < linesSent + linesToSend; i++)
             {
-                sb.AppendLine($"ID:{i:D4} - {fileData[i]}");
+                sb.AppendLine($"ID:{ID:D4} - {fileData[i]}");
+                ID++;
             }
 
             Message fileMessage = new Message();
@@ -112,7 +158,7 @@ class ServerUDP
             fileMessage.Content = sb.ToString();
             byte[] serializedMessage = Serialize(fileMessage);
             udpServer.Send(serializedMessage, serializedMessage.Length, clientEndpoint);
-            Console.WriteLine($"Sent {linesToSend} lines from {linesSent + 1} to {linesSent + linesToSend}");
+            Console.WriteLine($"Sent {linesToSend} lines from {linesSent + 1} to {linesSent + linesToSend}\n");
 
             linesSent += linesToSend;
 
@@ -141,6 +187,10 @@ class ServerUDP
         byte[] endData = Serialize(endMessage);
         udpServer.Send(endData, endData.Length, clientEndpoint);
     }
+    private bool IsValidRequestDataMessage(string content)
+    {
+        return !string.IsNullOrWhiteSpace(content);
+    }
     private static byte[] Serialize(Message message)
     {
         string messageString = $"{message.Type}|{message.Content}";
@@ -166,6 +216,7 @@ class ServerUDP
             throw new ArgumentException("Error decoding message", ex);
         }
     }
+
 }
 //TODO: keep receiving messages from clients
 // you can call a dedicated method to handle each received type of messages

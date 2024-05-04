@@ -19,6 +19,7 @@ class ClientUDP
     private const int ServerPort = 32000;
     private UdpClient udpClient;
 
+    public int threshold = 20;
     public void Start()
     {
         try
@@ -26,7 +27,7 @@ class ClientUDP
             udpClient = new UdpClient();
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(ServerAddress), ServerPort);
 
-            SendMessage(MessageType.Hello, "Hello from the client");
+            SendMessage(MessageType.Hello, "Hello from the client" + threshold.ToString());
 
             ReceiveMessages();
         }
@@ -42,17 +43,20 @@ class ClientUDP
             }
         }
     }
-
     private void SendMessage(MessageType messageType, string content)
     {
-        Message message = new Message { Type = messageType, Content = content };
+        string messageContent = messageType == MessageType.Hello ? $"{content} {threshold}" : content;
+        Message message = new Message { Type = messageType, Content = messageContent };
         byte[] data = Serialize(message);
         udpClient.Send(data, data.Length, ServerAddress, ServerPort);
     }
 
+
+
     private void ReceiveMessages()
     {
         List<string> receivedLines = new List<string>();
+        int messageCount = 0;
         try
         {
             while (true)
@@ -73,12 +77,18 @@ class ClientUDP
                         Console.WriteLine($"Received data from server: {receivedMessage.Content}");
                         SendMessage(MessageType.Ack, "Received data");
                         receivedLines.Add(receivedMessage.Content);
+                        messageCount++;
                     }
 
                 }
                 else if (receivedMessage.Type == MessageType.End)
                 {
                     Console.WriteLine("End of file transmission.");
+                    break;
+                }
+                if (messageCount >= threshold)
+                {
+                    Console.WriteLine($"Threshold of {threshold} reached. Stopping.");
                     break;
                 }
             }
